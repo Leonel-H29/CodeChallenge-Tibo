@@ -2,8 +2,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from '@src/app.controller';
 import { AppService } from '@src/app.service';
-//import { MysqlBaseClient } from '@src/clients/mysql/mysql-base-client';
-import { MysqlModule } from '@src/clients/mysql/mysql.module';
+import { MysqlTypeORMModule } from '@src/clients/typeorm/mysql/mysql-typeorm.module';
+import { CurrentAccountModule } from '@src/modules/checking-accounts/checking-account.module';
+import { AppConfigService } from '@src/app.configService';
 
 @Module({
   imports: [
@@ -11,9 +12,10 @@ import { MysqlModule } from '@src/clients/mysql/mysql.module';
       envFilePath: 'env',
       isGlobal: true,
     }),
-    MysqlModule,
+    MysqlTypeORMModule,
+    CurrentAccountModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, AppConfigService],
 })
 export class AppModule {}

@@ -2,7 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppConfigService } from '@src/app.configService';
 import { TypeOrmModule } from '@nestjs/typeorm';
-
+import { CurrentAccountEntity } from '@src/modules/checking-accounts/domain/entities/current-account.entity';
+import { FlowEntity } from '@src/modules/checking-accounts/domain/entities/flow.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -19,7 +20,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
           username: appConfigService.databaseUser,
           password: appConfigService.databasePassword,
           database: appConfigService.databaseName,
-          entities: [__dirname + '/**/*.entity{.ts,.js}'],
+          entities: [CurrentAccountEntity, FlowEntity],
           synchronize: true,
         };
       },
@@ -29,4 +30,4 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   providers: [AppConfigService],
   exports: [],
 })
-export class MysqlModule {}
+export class MysqlTypeORMModule {}
