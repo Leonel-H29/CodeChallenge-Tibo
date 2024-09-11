@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiExcludeEndpoint, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CurrentAccountService } from '@src/modules/checking-accounts/application/services/current-account.service';
 import { CreateCurrentAccountDto } from '@src/modules/checking-accounts/domain/dtos/create-current-account.dto';
 import { DepositDto } from '@src/modules/checking-accounts/domain/dtos/deposit.dto';
@@ -19,6 +19,7 @@ export class CurrentAccountController {
   }
 
   @Get(':id')
+  @ApiExcludeEndpoint()
   @ApiOperation({ summary: 'Endpoint to retrieve a current account by id' })
   async getAccountById(@Param('id') id: number) {
     return this.currentAccountService.getAccountById(id);

@@ -1,9 +1,15 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from '@src/app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { INestApplication } from '@nestjs/common';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<INestApplication>(AppModule, {
+    cors: {
+      origin: '*',
+      credentials: true,
+    },
+  });
 
   const config = new DocumentBuilder()
     .setTitle('Current Account API')

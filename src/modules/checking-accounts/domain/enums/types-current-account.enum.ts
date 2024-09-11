@@ -1,4 +1,4 @@
 export enum TypesCurrentAccountEnum {
-  DOLARES = 'USD',
+  DOLLARS = 'USD',
   PESOS_ARGENTINOS = 'ARS',
 }
