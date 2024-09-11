@@ -10,6 +10,7 @@ import { FlowEntity } from '@src/modules/checking-accounts/domain/entities/flow.
 import { CreateCurrentAccountDto } from '@src/modules/checking-accounts/domain/dtos/create-current-account.dto';
 import { DepositDto } from '@src/modules/checking-accounts/domain/dtos/deposit.dto';
 import { PaymentDto } from '@src/modules/checking-accounts/domain/dtos/payment.dto';
+import { handleHTTPException } from '@src/common/infrastucture/handleError';
 
 @Injectable()
 export class CurrentAccountService {
@@ -21,58 +22,74 @@ export class CurrentAccountService {
   ) {}
 
   async getAccountById(id: number) {
-    const account = await this.currentAccountRepository.findOne({
-      where: { id },
-    });
-    if (!account) {
-      throw new NotFoundException('Account not found');
+    try {
+      const account = await this.currentAccountRepository.findOne({
+        where: { id },
+      });
+      if (!account) {
+        throw new NotFoundException('Account not found');
+      }
+      return account;
+    } catch (error) {
+      return handleHTTPException(error);
     }
-    return account;
   }
 
   async createAccount(createCurrentAccountDto: CreateCurrentAccountDto) {
-    const account = this.currentAccountRepository.create(
-      createCurrentAccountDto
-    );
-    return this.currentAccountRepository.save(account);
+    try {
+      const account = this.currentAccountRepository.create(
+        createCurrentAccountDto
+      );
+      return await this.currentAccountRepository.save(account);
+    } catch (error) {
+      return handleHTTPException(error);
+    }
   }
 
   async deposit(depositDto: DepositDto) {
-    const account = await this.currentAccountRepository.findOne({
-      where: { id: depositDto.currentAccountId },
-    });
-    if (!account) {
-      throw new NotFoundException('Account not found');
+    try {
+      const account = await this.currentAccountRepository.findOne({
+        where: { id: depositDto.currentAccountId },
+      });
+      if (!account) {
+        throw new NotFoundException('Account not found');
+      }
+      account.balance += depositDto.amount;
+
+      const flow = this.flowRepository.create({
+        amount: depositDto.amount,
+        currentAccount: account,
+      });
+      await this.flowRepository.save(flow);
+
+      return await this.currentAccountRepository.save(account);
+    } catch (error) {
+      return handleHTTPException(error);
     }
-    account.balance += depositDto.amount;
-
-    const flow = this.flowRepository.create({
-      amount: depositDto.amount,
-      currentAccount: account,
-    });
-    await this.flowRepository.save(flow);
-
-    return this.currentAccountRepository.save(account);
   }
 
   async payment(paymentDto: PaymentDto) {
-    const account = await this.currentAccountRepository.findOne({
-      where: { id: paymentDto.currentAccountId },
-    });
-    if (!account) {
-      throw new NotFoundException('Account not found');
-    }
-    if (account.balance < paymentDto.amount) {
-      throw new BadRequestException('Insufficient funds');
-    }
-    account.balance -= paymentDto.amount;
+    try {
+      const account = await this.currentAccountRepository.findOne({
+        where: { id: paymentDto.currentAccountId },
+      });
+      if (!account) {
+        throw new NotFoundException('Account not found');
+      }
+      if (account.balance < paymentDto.amount) {
+        throw new BadRequestException('Insufficient funds');
+      }
+      account.balance -= paymentDto.amount;
 
-    const flow = this.flowRepository.create({
-      amount: -paymentDto.amount,
-      currentAccount: account,
-    });
-    await this.flowRepository.save(flow);
+      const flow = this.flowRepository.create({
+        amount: -paymentDto.amount,
+        currentAccount: account,
+      });
+      await this.flowRepository.save(flow);
 
-    return this.currentAccountRepository.save(account);
+      return await this.currentAccountRepository.save(account);
+    } catch (error) {
+      return handleHTTPException(error);
+    }
   }
 }

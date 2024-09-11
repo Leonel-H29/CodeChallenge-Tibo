@@ -12,19 +12,21 @@ export class CurrentAccountController {
 
   @Post()
   @ApiOperation({ summary: 'Endpoint to create a new current account' })
-  createAccount(@Body() createCurrentAccountDto: CreateCurrentAccountDto) {
+  async createAccount(
+    @Body() createCurrentAccountDto: CreateCurrentAccountDto
+  ) {
     return this.currentAccountService.createAccount(createCurrentAccountDto);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Endpoint to retrieve a current account by id' })
-  getAccountById(@Param('id') id: number) {
+  async getAccountById(@Param('id') id: number) {
     return this.currentAccountService.getAccountById(id);
   }
 
   @Post('deposit')
   @ApiOperation({ summary: 'Endpoint to credit funds to a current account' })
-  deposit(@Body() depositDto: DepositDto) {
+  async deposit(@Body() depositDto: DepositDto) {
     return this.currentAccountService.deposit(depositDto);
   }
 
@@ -32,7 +34,7 @@ export class CurrentAccountController {
   @ApiOperation({
     summary: 'Endpoint to make a payment from a current account ',
   })
-  payment(@Body() paymentDto: PaymentDto) {
+  async payment(@Body() paymentDto: PaymentDto) {
     return this.currentAccountService.payment(paymentDto);
   }
 }
