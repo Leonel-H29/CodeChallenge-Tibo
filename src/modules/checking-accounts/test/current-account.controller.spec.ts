@@ -31,10 +31,10 @@ describe('CurrentAccountController', () => {
 
   // TEST CREATE ACCOUNT
   it('should create an account with valid data', async () => {
-    const createCurrentAccount: CreateCurrentAccountDto = {
-      owner: 'John Doe',
-      type: TypesCurrentAccountEnum.DOLLARS,
-    };
+    const createCurrentAccount = new CreateCurrentAccountDto(
+      'John Doe',
+      TypesCurrentAccountEnum.DOLLARS
+    );
 
     jest
       .spyOn(service, 'createAccount')
@@ -46,10 +46,10 @@ describe('CurrentAccountController', () => {
   });
 
   it('should throw an error if the type is not USD or ARS', async () => {
-    const createCurrentAccount: CreateCurrentAccountDto = {
-      owner: 'John Doe',
-      type: 'EUR' as TypesCurrentAccountEnum,
-    };
+    const createCurrentAccount = new CreateCurrentAccountDto(
+      'John Doe',
+      'EUR' as TypesCurrentAccountEnum
+    );
 
     jest
       .spyOn(service, 'createAccount')
@@ -60,11 +60,11 @@ describe('CurrentAccountController', () => {
     ).rejects.toThrow();
   });
 
-  it('should throw an error if the owner is not a string', async () => {
-    const createCurrentAccount: CreateCurrentAccountDto = {
-      owner: '12345**///',
-      type: TypesCurrentAccountEnum.DOLLARS,
-    };
+  it('should throw an error if the owner not contain letters', async () => {
+    const createCurrentAccount = new CreateCurrentAccountDto(
+      '12345**///',
+      TypesCurrentAccountEnum.DOLLARS
+    );
     jest
       .spyOn(service, 'createAccount')
       .mockResolvedValueOnce(expect.any(Object));
